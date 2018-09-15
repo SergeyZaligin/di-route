@@ -1,7 +1,10 @@
 <?php declare(strict_types=1);
 
 namespace Engine;
+
 use Engine\DI\DI;
+use Engine\Helper\Common;
+use Engine\Core\Router\DispatchedRoute;
 
 /**
  * Start work Cms
@@ -17,6 +20,14 @@ class Cms
     private $di;
     
     /**
+     * Router object
+     * 
+     * @var type Router object
+     */
+    public $router;
+
+
+    /**
      * Constructor Cms
      * 
      * @param \Engine\DI $di
@@ -24,6 +35,7 @@ class Cms
     public function __construct(DI $di)
     {
         $this->di = $di;
+        $this->router = $this->di->get('router');
     }
     
     /**
@@ -31,18 +43,39 @@ class Cms
      */
     public function run(): void 
     {
-//        echo 'Hello world';
-//        echo '<pre>';
-//        print_r($this->di);
-//        echo '</pre>';
-        $db = $this->di->get('db');
-        print_r($db);
-//        $insert = $db->query("INSERT INTO posts (title, content) VALUES (:title, :content)", [
-//       'title' => 'Hello World333',
-//       'content' => 'Wrire content333'
-//        ]);
-//        if ($insert > 0) {
-//            print('Success!!!');
-//        }
+        try {
+            $this->router->add('home', '/', 'HomeController:index');
+            $this->router->add('product', '/user/12', 'ProductController:index');
+            $routerDispatch = $this->router->dispatch(Common::getMethod(), Common::getPathUrl());
+
+            if(null === $routerDispatch)
+            {
+                $routerDispatch = new DispatchedRoute('ErrorController:page404');
+            }
+
+            list($class, $action) = explode(':', $routerDispatch->getController(), 2);
+
+            $controller = '\\Cms\\Controller\\' . $class;
+            $parameters = $routerDispatch->getParameters();
+
+            call_user_func_array(
+                [
+                    new $controller($this->di), 
+                    $action
+                ], 
+                $parameters
+            );
+
+            echo '<pre>';
+            print_r($class);
+            echo '<br>';
+            print_r($action);
+            echo '</pre>';
+            //print();
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+            exit;
+        }
+
       }
 }

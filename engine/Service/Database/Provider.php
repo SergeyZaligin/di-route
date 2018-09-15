@@ -13,11 +13,11 @@ class Provider extends AbstractProvider
     /**
      * Service name
      * 
-     * @var type 
+     * @var string 
      */
     public $serviceName = 'db';
     /**
-     * Config db
+     * Configuration db
      * 
      * @var array
      */
