@@ -51,11 +51,14 @@ class UrlDispatcher
     }
     
     /**
+     * Convert pattern, (id:int)
+     * 
      * @param $pattern
      * @return mixed
     */
     private function convertPattern($pattern)
     {
+        // if not (id:int)
         if(strpos($pattern, '(') === false)
         {
             return $pattern;
@@ -65,12 +68,15 @@ class UrlDispatcher
     }
     
     /**
+     * Register path in browser
+     * 
      * @param $method
      * @param $pattern
      * @param $controller
     */
     public function register($method, $pattern, $controller)
     {
+        //print($pattern);
         $convert = $this->convertPattern($pattern);
         $this->routes[strtoupper($method)][$convert] = $controller;
     }
@@ -100,15 +106,19 @@ class UrlDispatcher
     }
     
     /**
-    * @param $matches
-    * @return string
-    */
+     * Method callback for function preg_replace_callback
+     * 
+     * @param $matches
+     * @return string
+     */
     private function replacePattern($matches)
     {
         return '(?<' .$matches[1]. '>'. strtr($matches[2], $this->patterns) .')';
     }
 
     /**
+     * Select params
+     * 
      * @param $parameters
      * @return mixed
      */
@@ -129,7 +139,7 @@ class UrlDispatcher
     * @param $method
     * @return array|mixed
     * not dispatch
-   */
+    */
     private function doDispatch($method, $uri)
     {
       foreach($this->routes($method) as $route => $controller)

@@ -44,8 +44,8 @@ class Cms
     public function run(): void 
     {
         try {
-            $this->router->add('home', '/', 'HomeController:index');
-            $this->router->add('product', '/user/12', 'ProductController:index');
+            require_once __DIR__ . '/../cms/Route.php';
+            
             $routerDispatch = $this->router->dispatch(Common::getMethod(), Common::getPathUrl());
 
             if(null === $routerDispatch)
